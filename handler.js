@@ -1,5 +1,5 @@
 'use strict';
-
+//git ignore
 var mysql       = require('mysql');
 var fs = require("fs");
 var serverIP    = 'creditcard.cbwiqcucvz8o.ap-southeast-1.rds.amazonaws.com';
