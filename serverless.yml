@@ -58,7 +58,19 @@ functions:
     handler: handler.hello
     events:
      - http:
-        path: users/hello
+        path: creditcardservice/hello
+        method: get
+  generateDeals:
+    handler: handler.generateDeals
+    events:
+     - http:
+        path: creditcardservice/deals
+        method: post
+  getDeals:
+    handler: handler.getDeals
+    events:
+     - http:
+        path: creditcardservice/deals
         method: get
 
 plugins:
