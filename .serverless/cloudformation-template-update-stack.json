@@ -29,7 +29,7 @@
           "Fn::Join": [
             "-",
             [
-              "userservice",
+              "creditcardservice",
               "dev",
               "ap-southeast-1",
               "lambdaRole"
@@ -49,7 +49,7 @@
             "-",
             [
               "dev",
-              "userservice",
+              "creditcardservice",
               "lambda"
             ]
           ]
@@ -71,6 +71,22 @@
                 "logs:PutLogEvents"
               ],
               "Resource": "arn:aws:logs:ap-southeast-1:*:*"
+            },
+            {
+              "Effect": "Allow",
+              "Action": [
+                "rds:*"
+              ],
+              "Resource": "arn:aws:rds:ap-southeast-1:623575552266:db:creditcard"
+            },
+            {
+              "Effect": "Allow",
+              "Action": [
+                "ec2:CreateNetworkInterface",
+                "ec2:DescribeNetworkInterfaces",
+                "ec2:DeleteNetworkInterface"
+              ],
+              "Resource": "*"
             }
           ]
         },
@@ -88,9 +104,9 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/userservice/dev/1482309753710-2016-12-21T08:42:33.710Z/userservice.zip"
+          "S3Key": "serverless/creditcardservice/dev/1484806377269-2017-01-19T06:12:57.269Z/creditcardservice.zip"
         },
-        "FunctionName": "userservice-dev-hello",
+        "FunctionName": "creditcardservice-dev-hello",
         "Handler": "handler.hello",
         "MemorySize": 1024,
         "Role": {
@@ -100,30 +116,84 @@
           ]
         },
         "Runtime": "nodejs4.3",
-        "Timeout": 6
+        "Timeout": 6,
+        "VpcConfig": {
+          "SecurityGroupIds": [
+            "sg-efd27188"
+          ],
+          "SubnetIds": [
+            "subnet-d641c8b2",
+            "subnet-fcf0488a"
+          ]
+        }
       },
       "DependsOn": [
         "IamPolicyLambdaExecution",
         "IamRoleLambdaExecution"
       ]
     },
-    "HelloLambdaVersionvX4NvbLlw9bWCqRMfFHETn1iCLe9Wzciz7dVNUbfE": {
+    "HelloLambdaVersion15c1zZfuWaF55T3vCM4OPWB0dHj8f2StPS3SsWFZYE": {
       "Type": "AWS::Lambda::Version",
       "DeletionPolicy": "Retain",
       "Properties": {
         "FunctionName": {
           "Ref": "HelloLambdaFunction"
         },
-        "CodeSha256": "vX4NvbLlw9+bWCqRMfFHET+n1iCLe9Wzciz7dVNUbfE="
+        "CodeSha256": "+15c1zZfuWaF55T3vCM4OPWB0dHj8f2StPS3SsWFZYE="
+      }
+    },
+    "GetDealsLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "ServerlessDeploymentBucket"
+          },
+          "S3Key": "serverless/creditcardservice/dev/1484806377269-2017-01-19T06:12:57.269Z/creditcardservice.zip"
+        },
+        "FunctionName": "creditcardservice-dev-getDeals",
+        "Handler": "handler.getDeals",
+        "MemorySize": 1024,
+        "Role": {
+          "Fn::GetAtt": [
+            "IamRoleLambdaExecution",
+            "Arn"
+          ]
+        },
+        "Runtime": "nodejs4.3",
+        "Timeout": 200,
+        "VpcConfig": {
+          "SecurityGroupIds": [
+            "sg-efd27188"
+          ],
+          "SubnetIds": [
+            "subnet-d641c8b2",
+            "subnet-fcf0488a"
+          ]
+        }
+      },
+      "DependsOn": [
+        "IamPolicyLambdaExecution",
+        "IamRoleLambdaExecution"
+      ]
+    },
+    "GetDealsLambdaVersion15c1zZfuWaF55T3vCM4OPWB0dHj8f2StPS3SsWFZYE": {
+      "Type": "AWS::Lambda::Version",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "GetDealsLambdaFunction"
+        },
+        "CodeSha256": "+15c1zZfuWaF55T3vCM4OPWB0dHj8f2StPS3SsWFZYE="
       }
     },
     "ApiGatewayRestApi": {
       "Type": "AWS::ApiGateway::RestApi",
       "Properties": {
-        "Name": "dev-userservice"
+        "Name": "dev-creditcardservice"
       }
     },
-    "ApiGatewayResourceUsers": {
+    "ApiGatewayResourceCreditcardservice": {
       "Type": "AWS::ApiGateway::Resource",
       "Properties": {
         "ParentId": {
@@ -132,17 +202,17 @@
             "RootResourceId"
           ]
         },
-        "PathPart": "users",
+        "PathPart": "creditcardservice",
         "RestApiId": {
           "Ref": "ApiGatewayRestApi"
         }
       }
     },
-    "ApiGatewayResourceUsersHello": {
+    "ApiGatewayResourceCreditcardserviceHello": {
       "Type": "AWS::ApiGateway::Resource",
       "Properties": {
         "ParentId": {
-          "Ref": "ApiGatewayResourceUsers"
+          "Ref": "ApiGatewayResourceCreditcardservice"
         },
         "PathPart": "hello",
         "RestApiId": {
@@ -150,13 +220,25 @@
         }
       }
     },
-    "ApiGatewayMethodUsersHelloGet": {
+    "ApiGatewayResourceCreditcardserviceDeals": {
+      "Type": "AWS::ApiGateway::Resource",
+      "Properties": {
+        "ParentId": {
+          "Ref": "ApiGatewayResourceCreditcardservice"
+        },
+        "PathPart": "deals",
+        "RestApiId": {
+          "Ref": "ApiGatewayRestApi"
+        }
+      }
+    },
+    "ApiGatewayMethodCreditcardserviceHelloGet": {
       "Type": "AWS::ApiGateway::Method",
       "Properties": {
         "HttpMethod": "GET",
         "RequestParameters": {},
         "ResourceId": {
-          "Ref": "ApiGatewayResourceUsersHello"
+          "Ref": "ApiGatewayResourceCreditcardserviceHello"
         },
         "RestApiId": {
           "Ref": "ApiGatewayRestApi"
@@ -188,7 +270,45 @@
         "MethodResponses": []
       }
     },
-    "ApiGatewayDeployment1482309753813": {
+    "ApiGatewayMethodCreditcardserviceDealsGet": {
+      "Type": "AWS::ApiGateway::Method",
+      "Properties": {
+        "HttpMethod": "GET",
+        "RequestParameters": {},
+        "ResourceId": {
+          "Ref": "ApiGatewayResourceCreditcardserviceDeals"
+        },
+        "RestApiId": {
+          "Ref": "ApiGatewayRestApi"
+        },
+        "AuthorizationType": "NONE",
+        "Integration": {
+          "IntegrationHttpMethod": "POST",
+          "Type": "AWS_PROXY",
+          "Uri": {
+            "Fn::Join": [
+              "",
+              [
+                "arn:aws:apigateway:",
+                {
+                  "Ref": "AWS::Region"
+                },
+                ":lambda:path/2015-03-31/functions/",
+                {
+                  "Fn::GetAtt": [
+                    "GetDealsLambdaFunction",
+                    "Arn"
+                  ]
+                },
+                "/invocations"
+              ]
+            ]
+          }
+        },
+        "MethodResponses": []
+      }
+    },
+    "ApiGatewayDeployment1484806377401": {
       "Type": "AWS::ApiGateway::Deployment",
       "Properties": {
         "RestApiId": {
@@ -197,7 +317,8 @@
         "StageName": "dev"
       },
       "DependsOn": [
-        "ApiGatewayMethodUsersHelloGet"
+        "ApiGatewayMethodCreditcardserviceHelloGet",
+        "ApiGatewayMethodCreditcardserviceDealsGet"
       ]
     },
     "HelloLambdaPermissionApiGateway": {
@@ -206,6 +327,39 @@
         "FunctionName": {
           "Fn::GetAtt": [
             "HelloLambdaFunction",
+            "Arn"
+          ]
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:aws:execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "ApiGatewayRestApi"
+              },
+              "/*/*"
+            ]
+          ]
+        }
+      }
+    },
+    "GetDealsLambdaPermissionApiGateway": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "GetDealsLambdaFunction",
             "Arn"
           ]
         },
@@ -252,7 +406,22 @@
     "HelloLambdaFunctionQualifiedArn": {
       "Description": "Current Lambda function version",
       "Value": {
-        "Ref": "HelloLambdaVersionvX4NvbLlw9bWCqRMfFHETn1iCLe9Wzciz7dVNUbfE"
+        "Ref": "HelloLambdaVersion15c1zZfuWaF55T3vCM4OPWB0dHj8f2StPS3SsWFZYE"
+      }
+    },
+    "GetDealsLambdaFunctionArn": {
+      "Description": "Lambda function info",
+      "Value": {
+        "Fn::GetAtt": [
+          "GetDealsLambdaFunction",
+          "Arn"
+        ]
+      }
+    },
+    "GetDealsLambdaFunctionQualifiedArn": {
+      "Description": "Current Lambda function version",
+      "Value": {
+        "Ref": "GetDealsLambdaVersion15c1zZfuWaF55T3vCM4OPWB0dHj8f2StPS3SsWFZYE"
       }
     },
     "ServiceEndpoint": {

@@ -53,12 +53,17 @@ module.exports.hello = (event, context, callback) => {
 };
 
 
-//  post test: curl --data "param1=value1&param2=value2" http://localhost:3000/creditcardservice/deals
+// curl --request GET 'http://localhost:3000/creditcardservice/deals?lat=1.277761&lng=103.844438'
 
-module.exports.generateDeals = (event, context, callback) => {
+module.exports.getDeals = (event, context, callback) => {
     console.log('*********************************');
     console.log('API: /gen_deals');
-    console.log(JSON.parse(event.body));
+    context.callbackWaitsForEmptyEventLoop = false;
+    console.log(event.queryStringParameters);
+    var lat       = event.queryStringParameters.lat; // test value: 1.276595
+    var lng       = event.queryStringParameters.lng; // test value: 103.844091
+    console.log('lat:'+lat);
+    console.log('lng:'+lng);
     var queryString = 'select dealItemId, dealDescription, dealImgLink,dealTerms,dealURL,dealExcerpt,dealStart,dealEnd, ' +
         'shopLat, shopLng, shopName, shopContact,shopAddress,shopPostal,shopMemberType, shopURL, ' +
         'typeName,typeValue,typeDisplayName, ' +
@@ -71,7 +76,14 @@ module.exports.generateDeals = (event, context, callback) => {
     //console.log('queryString:');
     //console.log(queryString);
     pool.getConnection(function(err, connection) {
+        console.log('err:');
+        console.log(err);
+        console.log(connection);
         connection.query( queryString, function(err, rows) {
+            console.log('connection query returns:');
+            console.log('err:');
+            console.log(err);
+            console.log(rows);
             // And done with the connection.
             connection.release();
             if (err)
@@ -91,6 +103,13 @@ module.exports.generateDeals = (event, context, callback) => {
                 if (rows.length > 0)
                 {
                     dealsJson = rows;
+                    console.time('filter sorting deals');
+                    dealsJson.sort(function(a, b) {
+                        a.distance = getDistanceFromLatLonInKm(a.shopLat,a.shopLng,lat,lng);
+                        b.distance = getDistanceFromLatLonInKm(b.shopLat,b.shopLng,lat,lng);
+                        return a.distance - b.distance;
+                    });
+                    console.timeEnd('filter sorting deals');
                     const response = {
                         statusCode: 200,
                         body: JSON.stringify({
@@ -99,7 +118,10 @@ module.exports.generateDeals = (event, context, callback) => {
                             data: dealsJson
                         }),
                     };
+                    console.log('response:');
+                    console.log(response);
                     callback(null, response);
+                    //context.succeed(response)
                 }else{
                     const response = {
                         statusCode: 200,
@@ -116,7 +138,7 @@ module.exports.generateDeals = (event, context, callback) => {
 };
 
 // curl --request GET 'http://localhost:3000/creditcardservice/deals?lat=1.277761&lng=103.844438'
-
+/*
 module.exports.getDeals = (event, context, callback) => {
     console.log('*********************************');
     console.log('HTTP GET:/deals:');
@@ -142,7 +164,7 @@ module.exports.getDeals = (event, context, callback) => {
         }),
     };
     callback(null, response);
-};
+};*/
 
 // =============================================================================
 // load Json Data

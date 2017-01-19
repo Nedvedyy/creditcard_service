@@ -26,19 +26,24 @@ provider:
   region: ap-southeast-1
 
 # you can add statements to the Lambda function's IAM Role here
-#  iamRoleStatements:
-#    - Effect: "Allow"
-#      Action:
-#        - "s3:ListBucket"
-#      Resource: { "Fn::Join" : ["", ["arn:aws:s3:::", { "Ref" : "ServerlessDeploymentBucket" } ] ]  }
-#    - Effect: "Allow"
-#      Action:
-#        - "s3:PutObject"
-#      Resource:
-#        Fn::Join:
-#          - ""
-#          - - "arn:aws:s3:::"
-#            - "Ref" : "ServerlessDeploymentBucket"
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+        - "rds:*"
+      Resource: "arn:aws:rds:ap-southeast-1:623575552266:db:creditcard"
+    - Effect: "Allow"
+      Action:
+        - "ec2:CreateNetworkInterface"
+        - "ec2:DescribeNetworkInterfaces"
+        - "ec2:DeleteNetworkInterface"
+      Resource: "*"
+
+  vpc:
+    securityGroupIds:
+      - sg-efd27188
+    subnetIds:
+      - subnet-d641c8b2
+      - subnet-fcf0488a
 
 # you can define service wide environment variables here
 #  environment:
@@ -60,18 +65,13 @@ functions:
      - http:
         path: creditcardservice/hello
         method: get
-  generateDeals:
-    handler: handler.generateDeals
-    events:
-     - http:
-        path: creditcardservice/deals
-        method: post
   getDeals:
     handler: handler.getDeals
     events:
      - http:
         path: creditcardservice/deals
         method: get
+    timeout: 200 # optional, default is 6
 
 plugins:
   - serverless-offline
