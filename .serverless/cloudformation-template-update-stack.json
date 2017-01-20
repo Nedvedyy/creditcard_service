@@ -104,7 +104,7 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/creditcardservice/dev/1484806377269-2017-01-19T06:12:57.269Z/creditcardservice.zip"
+          "S3Key": "serverless/creditcardservice/dev/1484901964501-2017-01-20T08:46:04.501Z/creditcardservice.zip"
         },
         "FunctionName": "creditcardservice-dev-hello",
         "Handler": "handler.hello",
@@ -132,14 +132,14 @@
         "IamRoleLambdaExecution"
       ]
     },
-    "HelloLambdaVersion15c1zZfuWaF55T3vCM4OPWB0dHj8f2StPS3SsWFZYE": {
+    "HelloLambdaVersionRKyagNcJD5oEeGRh71rfaXtR9YyJZwqkDCt8Oj3Lxw": {
       "Type": "AWS::Lambda::Version",
       "DeletionPolicy": "Retain",
       "Properties": {
         "FunctionName": {
           "Ref": "HelloLambdaFunction"
         },
-        "CodeSha256": "+15c1zZfuWaF55T3vCM4OPWB0dHj8f2StPS3SsWFZYE="
+        "CodeSha256": "R/KyagNcJD5oEeGRh71rfaXtR9YyJZwqkDCt8Oj3Lxw="
       }
     },
     "GetDealsLambdaFunction": {
@@ -149,7 +149,7 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/creditcardservice/dev/1484806377269-2017-01-19T06:12:57.269Z/creditcardservice.zip"
+          "S3Key": "serverless/creditcardservice/dev/1484901964501-2017-01-20T08:46:04.501Z/creditcardservice.zip"
         },
         "FunctionName": "creditcardservice-dev-getDeals",
         "Handler": "handler.getDeals",
@@ -177,14 +177,14 @@
         "IamRoleLambdaExecution"
       ]
     },
-    "GetDealsLambdaVersion15c1zZfuWaF55T3vCM4OPWB0dHj8f2StPS3SsWFZYE": {
+    "GetDealsLambdaVersionRKyagNcJD5oEeGRh71rfaXtR9YyJZwqkDCt8Oj3Lxw": {
       "Type": "AWS::Lambda::Version",
       "DeletionPolicy": "Retain",
       "Properties": {
         "FunctionName": {
           "Ref": "GetDealsLambdaFunction"
         },
-        "CodeSha256": "+15c1zZfuWaF55T3vCM4OPWB0dHj8f2StPS3SsWFZYE="
+        "CodeSha256": "R/KyagNcJD5oEeGRh71rfaXtR9YyJZwqkDCt8Oj3Lxw="
       }
     },
     "ApiGatewayRestApi": {
@@ -308,7 +308,7 @@
         "MethodResponses": []
       }
     },
-    "ApiGatewayDeployment1484806377401": {
+    "ApiGatewayDeployment1484901964670": {
       "Type": "AWS::ApiGateway::Deployment",
       "Properties": {
         "RestApiId": {
@@ -406,7 +406,7 @@
     "HelloLambdaFunctionQualifiedArn": {
       "Description": "Current Lambda function version",
       "Value": {
-        "Ref": "HelloLambdaVersion15c1zZfuWaF55T3vCM4OPWB0dHj8f2StPS3SsWFZYE"
+        "Ref": "HelloLambdaVersionRKyagNcJD5oEeGRh71rfaXtR9YyJZwqkDCt8Oj3Lxw"
       }
     },
     "GetDealsLambdaFunctionArn": {
@@ -421,7 +421,7 @@
     "GetDealsLambdaFunctionQualifiedArn": {
       "Description": "Current Lambda function version",
       "Value": {
-        "Ref": "GetDealsLambdaVersion15c1zZfuWaF55T3vCM4OPWB0dHj8f2StPS3SsWFZYE"
+        "Ref": "GetDealsLambdaVersionRKyagNcJD5oEeGRh71rfaXtR9YyJZwqkDCt8Oj3Lxw"
       }
     },
     "ServiceEndpoint": {

@@ -1,6 +1,19 @@
 'use strict';
 //git ignore
 var mysql       = require('mysql');
+var AWS = require('aws-sdk');
+AWS.config.update({region:'ap-southeast-1'});
+var Memcached = require('memcached');
+var elasticache = new AWS.ElastiCache();
+var params = {
+};
+var memcached = new Memcached('creditcard-memcache.fr4b8j.cfg.apse1.cache.amazonaws.com:11211',
+    {
+        timeout: 2000
+    });
+memcached.on('failure', function( details ){
+    console.log( "Server " + details.server + "went down due to: " + details.messages.join( '' ) ) });
+
 var fs = require("fs");
 var serverIP    = 'creditcard.cbwiqcucvz8o.ap-southeast-1.rds.amazonaws.com';
 var pool  = mysql.createPool({
@@ -37,19 +50,40 @@ function deg2rad(deg) {
 console.log('Inside of creditcard_service lambda');
 
 module.exports.hello = (event, context, callback) => {
-  //console.log('hello'.green); // outputs green text
-  const response = {
-    statusCode: 200,
-    body: JSON.stringify({
-      message: 'Go Serverless v1.0! Your function executed successfully!',
-      input: event,
-    }),
-  };
+    console.log('memcache. timeout 2s...');
+    elasticache.describeCacheClusters(params, function(err, data) {
+        if (err){
+            console.log(err, err.stack); // an error occurred
+            //console.log('hello'.green); // outputs green text
+            const response = {
+                statusCode: 200,
+                body: JSON.stringify({
+                    message: 'Go Serverless v1.0! Your function executed successfully!',
+                    input: event,
+                }),
+            };
 
-  callback(null, response);
+            callback(null, response);
+        }
+        else{
+            console.log('Describe Cache Cluster list:');
+            console.log(data);           // successful response
+            //console.log('hello'.green); // outputs green text
+            const response = {
+                statusCode: 200,
+                body: JSON.stringify({
+                    message: 'Go Serverless v1.0! Your function executed successfully!',
+                    input: event,
+                }),
+            };
 
-  // Use this code if you don't use the http event with the LAMBDA-PROXY integration
-  // callback(null, { message: 'Go Serverless v1.0! Your function executed successfully!', event });
+            callback(null, response);
+        }
+
+    });
+    console.log('getRemainingTimeInMillis:');
+    console.log(context.getRemainingTimeInMillis());
+    console.log(context);
 };
 
 
@@ -57,11 +91,14 @@ module.exports.hello = (event, context, callback) => {
 
 module.exports.getDeals = (event, context, callback) => {
     console.log('*********************************');
-    console.log('API: /gen_deals');
+    console.log('API: GET /deals');
     context.callbackWaitsForEmptyEventLoop = false;
     console.log(event.queryStringParameters);
-    var lat       = event.queryStringParameters.lat; // test value: 1.276595
-    var lng       = event.queryStringParameters.lng; // test value: 103.844091
+    var lat       = '';
+    if(event.queryStringParameters.lat)
+        lat  = event.queryStringParameters.lat; // test value: 1.276595
+    var lng       = '';
+        lng = event.queryStringParameters.lng; // test value: 103.844091
     console.log('lat:'+lat);
     console.log('lng:'+lng);
     var queryString = 'select dealItemId, dealDescription, dealImgLink,dealTerms,dealURL,dealExcerpt,dealStart,dealEnd, ' +
@@ -73,8 +110,6 @@ module.exports.getDeals = (event, context, callback) => {
         'left join TBL_GENRES ON TBL_GENRES.genreId = (SELECT genreId FROM TBL_DEALS,TBL_DEALGENRE WHERE TBL_DEALS.dealItemId = TBL_DEALGENRE.dealId ) ' +
         'left join TBL_TYPES ON TBL_TYPES.typeId = (SELECT typeId FROM TBL_DEALS,TBL_DEALTYPE WHERE TBL_DEALS.dealItemId = TBL_DEALTYPE.dealId ) ' +
         'WHERE TBL_DEALS.dealStatus = "Y" AND TBL_DEALS.dealEnd >= CURDATE() AND TBL_GENRES.status = "Y" AND TBL_TYPES.status = "Y"';
-    //console.log('queryString:');
-    //console.log(queryString);
     pool.getConnection(function(err, connection) {
         console.log('err:');
         console.log(err);
@@ -103,13 +138,19 @@ module.exports.getDeals = (event, context, callback) => {
                 if (rows.length > 0)
                 {
                     dealsJson = rows;
-                    console.time('filter sorting deals');
-                    dealsJson.sort(function(a, b) {
-                        a.distance = getDistanceFromLatLonInKm(a.shopLat,a.shopLng,lat,lng);
-                        b.distance = getDistanceFromLatLonInKm(b.shopLat,b.shopLng,lat,lng);
-                        return a.distance - b.distance;
-                    });
-                    console.timeEnd('filter sorting deals');
+                    if(lat.length>0 && lng.length>0){
+                        console.time('Sorting deals with lat/lng');
+                        dealsJson.sort(function(a, b) {
+                            a.distance = getDistanceFromLatLonInKm(a.shopLat,a.shopLng,lat,lng);
+                            b.distance = getDistanceFromLatLonInKm(b.shopLat,b.shopLng,lat,lng);
+                            return a.distance - b.distance;
+                        });
+                        console.timeEnd('Sorting deals with lat/lng')
+                    }else{
+                        console.log('Either Lat/Lng not available');
+                    };
+                    //wirte to Memcached.
+
                     const response = {
                         statusCode: 200,
                         body: JSON.stringify({
