@@ -7,12 +7,6 @@ var Memcached = require('memcached');
 var elasticache = new AWS.ElastiCache();
 var params = {
 };
-var memcached = new Memcached('creditcard-memcache.fr4b8j.cfg.apse1.cache.amazonaws.com:11211',
-    {
-        timeout: 2000
-    });
-memcached.on('failure', function( details ){
-    console.log( "Server " + details.server + "went down due to: " + details.messages.join( '' ) ) });
 
 var fs = require("fs");
 var serverIP    = 'creditcard.cbwiqcucvz8o.ap-southeast-1.rds.amazonaws.com';
@@ -47,10 +41,20 @@ function deg2rad(deg) {
     return deg * (Math.PI/180)
 }
 
-console.log('Inside of creditcard_service lambda');
+console.log('Inside of 1creditcard_service lambda');
 
 module.exports.hello = (event, context, callback) => {
-    console.log('memcache. timeout 2s...');
+    var memcached = new Memcached('creditcard-memcache.fr4b8j.cfg.apse1.cache.amazonaws.com:11211',
+        {
+            timeout: 2000,
+            retries: 1,
+            retry:30000
+
+        });
+    memcached.on("reconnecting", function () {console.error('reconnecting')} );
+    memcached.on("failure", function () {console.error('failure')} );
+    memcached.on("reconnect", function () {console.error('reconnect')} );
+
     elasticache.describeCacheClusters(params, function(err, data) {
         if (err){
             console.log(err, err.stack); // an error occurred
