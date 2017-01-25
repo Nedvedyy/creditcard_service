@@ -37,6 +37,10 @@ provider:
         - "ec2:DescribeNetworkInterfaces"
         - "ec2:DeleteNetworkInterface"
       Resource: "*"
+    - Effect: "Allow"
+      Action:
+        - "elasticache:*"
+      Resource: "*"
 
   vpc:
     securityGroupIds:
@@ -65,6 +69,14 @@ functions:
      - http:
         path: creditcardservice/hello
         method: get
+    timeout: 12 # optional, default is 6
+  serviceUpdate:
+    handler: handler.serviceUpdate
+    events:
+     - http:
+        path: creditcardservice/serviceupdate
+        method: get
+    timeout: 12 # optional, default is 6
   getDeals:
     handler: handler.getDeals
     events:

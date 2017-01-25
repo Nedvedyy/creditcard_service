@@ -87,6 +87,13 @@
                 "ec2:DeleteNetworkInterface"
               ],
               "Resource": "*"
+            },
+            {
+              "Effect": "Allow",
+              "Action": [
+                "elasticache:*"
+              ],
+              "Resource": "*"
             }
           ]
         },
@@ -104,7 +111,7 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/creditcardservice/dev/1485161647815-2017-01-23T08:54:07.815Z/creditcardservice.zip"
+          "S3Key": "serverless/creditcardservice/dev/1485334871784-2017-01-25T09:01:11.784Z/creditcardservice.zip"
         },
         "FunctionName": "creditcardservice-dev-hello",
         "Handler": "handler.hello",
@@ -116,7 +123,7 @@
           ]
         },
         "Runtime": "nodejs4.3",
-        "Timeout": 6,
+        "Timeout": 12,
         "VpcConfig": {
           "SecurityGroupIds": [
             "sg-efd27188"
@@ -132,14 +139,59 @@
         "IamRoleLambdaExecution"
       ]
     },
-    "HelloLambdaVersionyFtgBPE4OVIpS5A9riNcXjtEEY0GdH8aqeyNHjmGwo": {
+    "HelloLambdaVersionBQvAAqJwnGE4olcwXeRJu9NoCYHPNA3rtUvHqWYjs": {
       "Type": "AWS::Lambda::Version",
       "DeletionPolicy": "Retain",
       "Properties": {
         "FunctionName": {
           "Ref": "HelloLambdaFunction"
         },
-        "CodeSha256": "yFtgBPE4OVIpS5A9riNcXjtEEY0G+dH8aqeyNHjmGwo="
+        "CodeSha256": "BQvAAqJwnGE4olcwXeRJu9NoCYHPNA3+rtUvHqWYj+s="
+      }
+    },
+    "ServiceUpdateLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "ServerlessDeploymentBucket"
+          },
+          "S3Key": "serverless/creditcardservice/dev/1485334871784-2017-01-25T09:01:11.784Z/creditcardservice.zip"
+        },
+        "FunctionName": "creditcardservice-dev-serviceUpdate",
+        "Handler": "handler.serviceUpdate",
+        "MemorySize": 1024,
+        "Role": {
+          "Fn::GetAtt": [
+            "IamRoleLambdaExecution",
+            "Arn"
+          ]
+        },
+        "Runtime": "nodejs4.3",
+        "Timeout": 12,
+        "VpcConfig": {
+          "SecurityGroupIds": [
+            "sg-efd27188"
+          ],
+          "SubnetIds": [
+            "subnet-d641c8b2",
+            "subnet-fcf0488a"
+          ]
+        }
+      },
+      "DependsOn": [
+        "IamPolicyLambdaExecution",
+        "IamRoleLambdaExecution"
+      ]
+    },
+    "ServiceUpdateLambdaVersionBQvAAqJwnGE4olcwXeRJu9NoCYHPNA3rtUvHqWYjs": {
+      "Type": "AWS::Lambda::Version",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "ServiceUpdateLambdaFunction"
+        },
+        "CodeSha256": "BQvAAqJwnGE4olcwXeRJu9NoCYHPNA3+rtUvHqWYj+s="
       }
     },
     "GetDealsLambdaFunction": {
@@ -149,7 +201,7 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/creditcardservice/dev/1485161647815-2017-01-23T08:54:07.815Z/creditcardservice.zip"
+          "S3Key": "serverless/creditcardservice/dev/1485334871784-2017-01-25T09:01:11.784Z/creditcardservice.zip"
         },
         "FunctionName": "creditcardservice-dev-getDeals",
         "Handler": "handler.getDeals",
@@ -177,14 +229,14 @@
         "IamRoleLambdaExecution"
       ]
     },
-    "GetDealsLambdaVersionyFtgBPE4OVIpS5A9riNcXjtEEY0GdH8aqeyNHjmGwo": {
+    "GetDealsLambdaVersionBQvAAqJwnGE4olcwXeRJu9NoCYHPNA3rtUvHqWYjs": {
       "Type": "AWS::Lambda::Version",
       "DeletionPolicy": "Retain",
       "Properties": {
         "FunctionName": {
           "Ref": "GetDealsLambdaFunction"
         },
-        "CodeSha256": "yFtgBPE4OVIpS5A9riNcXjtEEY0G+dH8aqeyNHjmGwo="
+        "CodeSha256": "BQvAAqJwnGE4olcwXeRJu9NoCYHPNA3+rtUvHqWYj+s="
       }
     },
     "ApiGatewayRestApi": {
@@ -215,6 +267,18 @@
           "Ref": "ApiGatewayResourceCreditcardservice"
         },
         "PathPart": "hello",
+        "RestApiId": {
+          "Ref": "ApiGatewayRestApi"
+        }
+      }
+    },
+    "ApiGatewayResourceCreditcardserviceServiceupdate": {
+      "Type": "AWS::ApiGateway::Resource",
+      "Properties": {
+        "ParentId": {
+          "Ref": "ApiGatewayResourceCreditcardservice"
+        },
+        "PathPart": "serviceupdate",
         "RestApiId": {
           "Ref": "ApiGatewayRestApi"
         }
@@ -270,6 +334,44 @@
         "MethodResponses": []
       }
     },
+    "ApiGatewayMethodCreditcardserviceServiceupdateGet": {
+      "Type": "AWS::ApiGateway::Method",
+      "Properties": {
+        "HttpMethod": "GET",
+        "RequestParameters": {},
+        "ResourceId": {
+          "Ref": "ApiGatewayResourceCreditcardserviceServiceupdate"
+        },
+        "RestApiId": {
+          "Ref": "ApiGatewayRestApi"
+        },
+        "AuthorizationType": "NONE",
+        "Integration": {
+          "IntegrationHttpMethod": "POST",
+          "Type": "AWS_PROXY",
+          "Uri": {
+            "Fn::Join": [
+              "",
+              [
+                "arn:aws:apigateway:",
+                {
+                  "Ref": "AWS::Region"
+                },
+                ":lambda:path/2015-03-31/functions/",
+                {
+                  "Fn::GetAtt": [
+                    "ServiceUpdateLambdaFunction",
+                    "Arn"
+                  ]
+                },
+                "/invocations"
+              ]
+            ]
+          }
+        },
+        "MethodResponses": []
+      }
+    },
     "ApiGatewayMethodCreditcardserviceDealsGet": {
       "Type": "AWS::ApiGateway::Method",
       "Properties": {
@@ -308,7 +410,7 @@
         "MethodResponses": []
       }
     },
-    "ApiGatewayDeployment1485161648047": {
+    "ApiGatewayDeployment1485334871969": {
       "Type": "AWS::ApiGateway::Deployment",
       "Properties": {
         "RestApiId": {
@@ -318,6 +420,7 @@
       },
       "DependsOn": [
         "ApiGatewayMethodCreditcardserviceHelloGet",
+        "ApiGatewayMethodCreditcardserviceServiceupdateGet",
         "ApiGatewayMethodCreditcardserviceDealsGet"
       ]
     },
@@ -327,6 +430,39 @@
         "FunctionName": {
           "Fn::GetAtt": [
             "HelloLambdaFunction",
+            "Arn"
+          ]
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:aws:execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "ApiGatewayRestApi"
+              },
+              "/*/*"
+            ]
+          ]
+        }
+      }
+    },
+    "ServiceUpdateLambdaPermissionApiGateway": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "ServiceUpdateLambdaFunction",
             "Arn"
           ]
         },
@@ -406,7 +542,22 @@
     "HelloLambdaFunctionQualifiedArn": {
       "Description": "Current Lambda function version",
       "Value": {
-        "Ref": "HelloLambdaVersionyFtgBPE4OVIpS5A9riNcXjtEEY0GdH8aqeyNHjmGwo"
+        "Ref": "HelloLambdaVersionBQvAAqJwnGE4olcwXeRJu9NoCYHPNA3rtUvHqWYjs"
+      }
+    },
+    "ServiceUpdateLambdaFunctionArn": {
+      "Description": "Lambda function info",
+      "Value": {
+        "Fn::GetAtt": [
+          "ServiceUpdateLambdaFunction",
+          "Arn"
+        ]
+      }
+    },
+    "ServiceUpdateLambdaFunctionQualifiedArn": {
+      "Description": "Current Lambda function version",
+      "Value": {
+        "Ref": "ServiceUpdateLambdaVersionBQvAAqJwnGE4olcwXeRJu9NoCYHPNA3rtUvHqWYjs"
       }
     },
     "GetDealsLambdaFunctionArn": {
@@ -421,7 +572,7 @@
     "GetDealsLambdaFunctionQualifiedArn": {
       "Description": "Current Lambda function version",
       "Value": {
-        "Ref": "GetDealsLambdaVersionyFtgBPE4OVIpS5A9riNcXjtEEY0GdH8aqeyNHjmGwo"
+        "Ref": "GetDealsLambdaVersionBQvAAqJwnGE4olcwXeRJu9NoCYHPNA3rtUvHqWYjs"
       }
     },
     "ServiceEndpoint": {

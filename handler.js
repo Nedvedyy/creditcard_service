@@ -43,7 +43,23 @@ function deg2rad(deg) {
 
 console.log('Inside of 1creditcard_service lambda');
 
+
+module.exports.serviceUpdate = (event, context, callback) => {
+    context.callbackWaitsForEmptyEventLoop = false;
+    console.log('service update:');
+    console.log(event);
+    const response = {
+        statusCode: 200,
+        body: JSON.stringify({
+            message: 'serviceUpdated.',
+            input: event,
+        }),
+    };
+    callback(null, response);
+};
+
 module.exports.hello = (event, context, callback) => {
+    context.callbackWaitsForEmptyEventLoop = false;
     var memcached = new Memcached('creditcard-memcache.fr4b8j.cfg.apse1.cache.amazonaws.com:11211',
         {
             timeout: 2000,
@@ -51,43 +67,71 @@ module.exports.hello = (event, context, callback) => {
             retry:30000
 
         });
-    memcached.on("reconnecting", function () {console.error('reconnecting')} );
-    memcached.on("failure", function () {console.error('failure')} );
-    memcached.on("reconnect", function () {console.error('reconnect')} );
-
-    elasticache.describeCacheClusters(params, function(err, data) {
-        if (err){
-            console.log(err, err.stack); // an error occurred
-            //console.log('hello'.green); // outputs green text
-            const response = {
-                statusCode: 200,
-                body: JSON.stringify({
-                    message: 'Go Serverless v1.0! Your function executed successfully!',
-                    input: event,
-                }),
-            };
-
-            callback(null, response);
-        }
-        else{
-            console.log('Describe Cache Cluster list:');
-            console.log(data);           // successful response
-            //console.log('hello'.green); // outputs green text
-            const response = {
-                statusCode: 200,
-                body: JSON.stringify({
-                    message: 'Go Serverless v1.0! Your function executed successfully!',
-                    input: event,
-                }),
-            };
-
-            callback(null, response);
-        }
-
+    memcached.on("reconnecting", function () {
+        console.log('reconnecting');
+        //throw err
+        const response = {
+            statusCode: 200,
+            body: JSON.stringify({
+                message: 'Reconnecting.',
+                input: event,
+            }),
+        };
+        callback(null, response);
+    } );
+    memcached.on("failure", function () {
+        console.log('failure');
+        //throw err
+        const response = {
+            statusCode: 200,
+            body: JSON.stringify({
+                message: 'Failure...',
+                input: event,
+            }),
+        };
+        callback(null, response);
+    } );
+    memcached.on("reconnect", function () {
+        console.log('reconnect');
+        //throw err
+        const response = {
+            statusCode: 200,
+            body: JSON.stringify({
+                message: 'reconnect',
+                input: event,
+            }),
+        };
+        callback(null, response);
     });
-    console.log('getRemainingTimeInMillis:');
-    console.log(context.getRemainingTimeInMillis());
-    console.log(context);
+    /*
+    memcached.set( "hello", 1, 1000, function( err, result ){
+        if( err )
+            console.log( err );
+
+        console.log( result );
+        memcached.end();
+        const response = {
+            statusCode: 200,
+            body: JSON.stringify({
+                message: result,
+                input: event,
+            }),
+        };
+        callback(null, response);
+    });*/
+    memcached.get('hello', function (err, data) {
+        console.log('data:');
+        console.log(data);
+        memcached.end();
+        const response = {
+            statusCode: 200,
+            body: JSON.stringify({
+                message: data,
+                input: event,
+            }),
+        };
+        callback(null, response);
+    });
 };
 
 
@@ -213,9 +257,9 @@ module.exports.getDeals = (event, context, callback) => {
 
 // =============================================================================
 // load Json Data
-// Read Synchrously
+/* Read Synchrously
 console.time('loading sample JSON');
 var loadingStartTime = new Date();
 dealsJson = JSON.parse(fs.readFileSync('1000Records.json', 'utf8'));
 console.timeEnd('loading sample JSON');
-
+*/
