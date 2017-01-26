@@ -111,7 +111,7 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/creditcardservice/dev/1485334871784-2017-01-25T09:01:11.784Z/creditcardservice.zip"
+          "S3Key": "serverless/creditcardservice/dev/1485421846876-2017-01-26T09:10:46.876Z/creditcardservice.zip"
         },
         "FunctionName": "creditcardservice-dev-hello",
         "Handler": "handler.hello",
@@ -139,14 +139,14 @@
         "IamRoleLambdaExecution"
       ]
     },
-    "HelloLambdaVersionBQvAAqJwnGE4olcwXeRJu9NoCYHPNA3rtUvHqWYjs": {
+    "HelloLambdaVersion2SuhNbBrlMi6osvnH2Iz7p77kofxSAAM8558V1Pk": {
       "Type": "AWS::Lambda::Version",
       "DeletionPolicy": "Retain",
       "Properties": {
         "FunctionName": {
           "Ref": "HelloLambdaFunction"
         },
-        "CodeSha256": "BQvAAqJwnGE4olcwXeRJu9NoCYHPNA3+rtUvHqWYj+s="
+        "CodeSha256": "2/SuhNbBrlMi6osvnH2Iz7p77kofxS+AAM8558V/1Pk="
       }
     },
     "ServiceUpdateLambdaFunction": {
@@ -156,7 +156,7 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/creditcardservice/dev/1485334871784-2017-01-25T09:01:11.784Z/creditcardservice.zip"
+          "S3Key": "serverless/creditcardservice/dev/1485421846876-2017-01-26T09:10:46.876Z/creditcardservice.zip"
         },
         "FunctionName": "creditcardservice-dev-serviceUpdate",
         "Handler": "handler.serviceUpdate",
@@ -184,14 +184,14 @@
         "IamRoleLambdaExecution"
       ]
     },
-    "ServiceUpdateLambdaVersionBQvAAqJwnGE4olcwXeRJu9NoCYHPNA3rtUvHqWYjs": {
+    "ServiceUpdateLambdaVersion2SuhNbBrlMi6osvnH2Iz7p77kofxSAAM8558V1Pk": {
       "Type": "AWS::Lambda::Version",
       "DeletionPolicy": "Retain",
       "Properties": {
         "FunctionName": {
           "Ref": "ServiceUpdateLambdaFunction"
         },
-        "CodeSha256": "BQvAAqJwnGE4olcwXeRJu9NoCYHPNA3+rtUvHqWYj+s="
+        "CodeSha256": "2/SuhNbBrlMi6osvnH2Iz7p77kofxS+AAM8558V/1Pk="
       }
     },
     "GetDealsLambdaFunction": {
@@ -201,7 +201,7 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/creditcardservice/dev/1485334871784-2017-01-25T09:01:11.784Z/creditcardservice.zip"
+          "S3Key": "serverless/creditcardservice/dev/1485421846876-2017-01-26T09:10:46.876Z/creditcardservice.zip"
         },
         "FunctionName": "creditcardservice-dev-getDeals",
         "Handler": "handler.getDeals",
@@ -229,14 +229,14 @@
         "IamRoleLambdaExecution"
       ]
     },
-    "GetDealsLambdaVersionBQvAAqJwnGE4olcwXeRJu9NoCYHPNA3rtUvHqWYjs": {
+    "GetDealsLambdaVersion2SuhNbBrlMi6osvnH2Iz7p77kofxSAAM8558V1Pk": {
       "Type": "AWS::Lambda::Version",
       "DeletionPolicy": "Retain",
       "Properties": {
         "FunctionName": {
           "Ref": "GetDealsLambdaFunction"
         },
-        "CodeSha256": "BQvAAqJwnGE4olcwXeRJu9NoCYHPNA3+rtUvHqWYj+s="
+        "CodeSha256": "2/SuhNbBrlMi6osvnH2Iz7p77kofxS+AAM8558V/1Pk="
       }
     },
     "ApiGatewayRestApi": {
@@ -410,7 +410,7 @@
         "MethodResponses": []
       }
     },
-    "ApiGatewayDeployment1485334871969": {
+    "ApiGatewayDeployment1485421847074": {
       "Type": "AWS::ApiGateway::Deployment",
       "Properties": {
         "RestApiId": {
@@ -542,7 +542,7 @@
     "HelloLambdaFunctionQualifiedArn": {
       "Description": "Current Lambda function version",
       "Value": {
-        "Ref": "HelloLambdaVersionBQvAAqJwnGE4olcwXeRJu9NoCYHPNA3rtUvHqWYjs"
+        "Ref": "HelloLambdaVersion2SuhNbBrlMi6osvnH2Iz7p77kofxSAAM8558V1Pk"
       }
     },
     "ServiceUpdateLambdaFunctionArn": {
@@ -557,7 +557,7 @@
     "ServiceUpdateLambdaFunctionQualifiedArn": {
       "Description": "Current Lambda function version",
       "Value": {
-        "Ref": "ServiceUpdateLambdaVersionBQvAAqJwnGE4olcwXeRJu9NoCYHPNA3rtUvHqWYjs"
+        "Ref": "ServiceUpdateLambdaVersion2SuhNbBrlMi6osvnH2Iz7p77kofxSAAM8558V1Pk"
       }
     },
     "GetDealsLambdaFunctionArn": {
@@ -572,7 +572,7 @@
     "GetDealsLambdaFunctionQualifiedArn": {
       "Description": "Current Lambda function version",
       "Value": {
-        "Ref": "GetDealsLambdaVersionBQvAAqJwnGE4olcwXeRJu9NoCYHPNA3rtUvHqWYjs"
+        "Ref": "GetDealsLambdaVersion2SuhNbBrlMi6osvnH2Iz7p77kofxSAAM8558V1Pk"
       }
     },
     "ServiceEndpoint": {
